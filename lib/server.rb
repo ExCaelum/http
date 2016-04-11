@@ -10,17 +10,19 @@ class Server
 
   def request
     while true
-      @client = @tcp_server.accept
+      client = @tcp_server.accept
       request_lines = []
-      while line = @client.gets and !line.chomp.empty?
+      while line = client.gets and !line.chomp.empty?
         request_lines << line.chomp
       end
       get_response(request_lines.join("\n"))
       @counter += 1
-      display_message
-      @client.close
+      display_message(client)
+      client.close
     end
   end
+
+  private
 
   def get_response(response)
     response = "<pre>" + response + "</pre>"
@@ -32,11 +34,11 @@ class Server
               "content-length: #{@output.length}\r\n\r\n"].join("\r\n")
   end
 
-  def display_message
+  def display_message(client)
     puts ["Wrote this response:", @headers, @output].join("\n")
-    @client.puts @header
-    @client.puts @output
-    @client.puts "Hello World! (#{@counter})"
+    client.puts @header
+    client.puts @output
+    client.puts "Hello World! (#{@counter})"
   end
 end
 
