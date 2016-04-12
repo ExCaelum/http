@@ -11,10 +11,31 @@ class Server
   def request
     while true
       client = @tcp_server.accept
+
+
+      ########## 1 - READ RAW REQUEST LINES
       request_lines = []
       while line = client.gets and !line.chomp.empty?
         request_lines << line.chomp
       end
+      ###########################
+
+      ########## 2 - PARSE RAW REQUEST LINES INTO REQUEST DATA (Hash OR Request object of some sort)
+      ### VERB, PATH, PROTOCOL, HOST, HEADERS, BODY, PORT, ORIGIN
+
+
+      ############################
+
+
+      ######################### 3 - Use REQUEST DATA TO GENERATE RESPONSE DATA
+      # HEADERS, STATUS CODE, BODY
+
+      ##############
+
+
+      ########## 4 - USE RESPONSE DATA TO Generate a response string
+
+      ########### 5 - PUSH RESPONSE STRING DOWN THE SOCKET
       puts request_lines.inspect
       @response = request_lines.join("\n")
       get_response
@@ -29,6 +50,7 @@ class Server
   def get_response
     # response = <pre> + response + </pre>
     # binding.pry
+    # Body, Headers, Verb, Path, Protocol
     @response = parse_response
     @output = "<html><head></head><body><pre>#{@response}</pre></body></html>"
     @headers = ["http/1.1 200 ok",
@@ -69,13 +91,13 @@ class Server
     @response.split("\n")[1].split(" ")[1].split(":")[1]
   end
 
-  # def accept
-  #
-  # end
+  def accept
+    @response.split("\n")[6].split
+  end
 
   def display_message(client)
     puts ["Wrote this response:", @headers, @output].join("\n")
-    client.puts @header
+    client.puts @headers
     client.puts @output
     client.puts "Hello World! (#{@counter})"
   end
