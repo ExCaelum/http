@@ -22,13 +22,14 @@ class Server
 
       ########## 2 - PARSE RAW REQUEST LINES INTO REQUEST DATA (Hash OR Request object of some sort)
       ### VERB, PATH, PROTOCOL, HOST, HEADERS, BODY, PORT, ORIGIN
-
+      request = RequestParser.new(request_lines)
 
       ############################
 
 
       ######################### 3 - Use REQUEST DATA TO GENERATE RESPONSE DATA
       # HEADERS, STATUS CODE, BODY
+      response = Response.new(request)
 
       ##############
 
@@ -51,23 +52,22 @@ class Server
     # response = <pre> + response + </pre>
     # binding.pry
     # Body, Headers, Verb, Path, Protocol
-    @response = parse_response
-    @output = "<html><head></head><body><pre>#{@response}</pre></body></html>"
+    @output = "<html><head></head><body><pre>#{diagnostic_info}</pre></body></html>"
     @headers = ["http/1.1 200 ok",
               "date: #{Time.now.strftime('%a, %e %b %Y %H:%M%S %z')}",
               "server: ruby",
               "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
               "content-type: text/html; charset=iso-8859-1",
-              "content-length: #{@output.length}\r\n\r\n"].join("\r\n")
+              "content-length: #th}\r\n\r\n#{@output}"].join("\r\n")
   end
 
-  def parse_response
-    string = " Verb: #{verb}
-              Path: #{path}
-              Protocol: #{protocol}
-              Host: #{host}
-              Port: #{port}
-              Origin: #{host}"
+  def diagnostic_info
+    " Verb: #{verb}
+      Path: #{path}
+      Protocol: #{protocol}
+      Host: #{host}
+      Port: #{port}
+      Origin: #{host}"
               # Accept: #{accept}"
   end
 
