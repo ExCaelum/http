@@ -11,8 +11,6 @@ class Response
     when "/datetime"
       date = Time.now.strftime('%l:%M %p on %A, %B %e, %Y')
       "#{date}"
-    when "/word_search"
-      
     when "/shutdown"
       "Total Request: #{counter}"
     end
