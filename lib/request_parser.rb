@@ -1,4 +1,5 @@
 class RequestParser
+  attr_reader :request_lines
 
   def initialize(request_lines = [])
     @request_lines = request_lines
@@ -31,6 +32,6 @@ class RequestParser
   def headers
     @request_lines.drop(1).map do |line|
       parse_header_line(line)
-    end.to_h
+    end.to_h 
   end
 end
