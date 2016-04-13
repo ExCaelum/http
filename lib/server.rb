@@ -1,54 +1,36 @@
 require 'socket'
 require 'pry'
-require './lib/request_parser'
 require './lib/response'
 
 class Server
 
   def initialize
     @tcp_server = TCPServer.new(9297)
-    @counter = 0
   end
 
   def request
+    counter = 0
     while true
       client = @tcp_server.accept
 
 
       ########## 1 - READ RAW REQUEST LINES
       request_lines = []
-      @counter += 1
+      counter += 1
       while line = client.gets and !line.chomp.empty?
         request_lines << line.chomp
       end
-      ###########################
 
       ########## 2 - PARSE RAW REQUEST LINES INTO REQUEST DATA (Hash OR Request object of some sort)
       ### VERB, PATH, PROTOCOL, HOST, HEADERS, BODY, PORT, ORIGIN
+
       request = RequestParser.new(request_lines)
 
+      ########## 3 - Use REQUEST DATA TO GENERATE RESPONSE DATA
+      response = Response.new
+      client.puts response.output(request, client, counter)
 
-
-      ### STRFTIME FORMAT (%l:%M %p on %A, %B %e, %Y)
-
-
-      ############################
-
-
-      ######################### 3 - Use REQUEST DATA TO GENERATE RESPONSE DATA
-      # HEADERS, STATUS CODE, BODY
-      if request.path == "/"
-        client.puts "Verb: #{request.verb}\nPath: #{request.path}\nProtocol: #{request.protocol}\nHost: #{request.headers.fetch("Host")[0..-6]}\nPort: #{request.headers.fetch("Host")[-4..-1]}\nOrigin: #{request.headers.fetch("Host")[0..-6]}\nAccept: #{request.headers.fetch("Accept")}"
-      elsif request.path == "/hello"
-        client.puts "Hello World! #{@counter}"
-      elsif request.path == "/datetime"
-        date = Time.now.strftime('%l:%M %p on %A, %B %e, %Y')
-        client.puts "#{date}"
-      elsif request.path == "/shutdown"
-        client.puts "Total Request: #{@counter}"
-        break        
-      end
-
+      break if request.path == "/shutdown"
       client.close
     end
   end
