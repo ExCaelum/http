@@ -4,10 +4,6 @@ require "minitest/autorun"
 require "./lib/request_parser"
 require "minitest/pride"
 
-########## 2 - PARSE RAW REQUEST LINES INTO REQUEST DATA (Hash OR Request object of some sort)
-### VERB, PATH, PROTOCOL, HOST, HEADERS, BODY, PORT, ORIGIN
-############################
-
 class RequestParserTest < Minitest::Test
   def test_exists
     assert RequestParser
