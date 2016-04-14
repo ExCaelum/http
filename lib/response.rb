@@ -73,20 +73,3 @@ class Response
     word.split('=')[1]
   end
 end
-
-
-
-
-# case request.path
-# when "/"
-#   "Verb: #{request.verb}\nPath: #{request.path}\nProtocol: #{request.protocol}\nHost: #{request.headers.fetch("Host")[0..-6]}\nPort: #{request.headers.fetch("Host")[-4..-1]}\nOrigin: #{request.headers.fetch("Host")[0..-6]}\nAccept: #{request.headers.fetch("Accept")}"
-# when "/hello"
-#   "Hello World! #{counter}"
-# when "/datetime"
-#   date = Time.now.strftime('%l:%M %p on %A, %B %e, %Y')
-#   "#{date}"
-# when "/word_search"
-#
-# when "/shutdown"
-#   "Total Request: #{counter}"
-# end
