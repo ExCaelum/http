@@ -1,10 +1,12 @@
 require 'socket'
 require 'pry'
 require './lib/response'
+require './lib/persist'
 
 class Server
 
   def initialize
+    @ps = Persistent.new
     @tcp_server = TCPServer.new(9297)
   end
 
@@ -15,15 +17,20 @@ class Server
       request_lines = get_lines(client)
       counter += 1
       request = RequestParser.new(request_lines)
-      response_params = {
-        request: request,
-        counter: counter
-      }
-      response = Response.new(response_params)
-      client.puts response.output(request, counter)
+      response = Response.new(request, counter, @ps)
+      output = response.output(request, counter, @ps)
 
-      break if request.path == "/shutdown"
+      headers = ["http/1.1 200 ok",
+                  "date: #{Time.now.strftime('%a, %e %b %Y %H:%M%S %z')}",
+                  "server: ruby",
+                  "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                  "content-type: text/html; charset=iso-8859-1",
+                  "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+
+      client.puts headers
+      client.puts output
       client.close
+      break if request.path == "/shutdown"
     end
   end
 

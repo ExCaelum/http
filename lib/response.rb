@@ -1,24 +1,26 @@
 require './lib/request_parser.rb'
 
 class Response
+  attr_reader :ps
 
-  def initialize(params = {})
-    request = params[:request]
-    counter = params[:counter]
+  def initialize(request, counter = nil, ps = nil)
+    @ps = ps
   end
 
-  def output(request, counter = nil)
-
+  def output(request, counter = nil, ps = nil)
     if action(request) == "/"
        get_diagnostics(request)
     elsif action(request) == "/hello"
-       get_hello(counter)
+       get_hello
     elsif action(request) == "/datetime"
        get_date
     elsif action(request) == "/shutdown"
        get_shutdown(counter)
     elsif action(request) == "/word_search"
       determine_valid_word(searched_word(request))
+    elsif action(request) == "/start_game"
+      # Starts the game
+      "Good Luck!"
     end
   end
 
@@ -41,8 +43,9 @@ class Response
     ].join("\n")
   end
 
-  def get_hello(counter)
-    "Hello World! #{counter}"
+  def get_hello
+    @ps.hello_count += 1
+    "Hello World! #{@ps.hello_count}"
   end
 
   def get_date
