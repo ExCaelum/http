@@ -17,7 +17,7 @@ class ResponseTest < Minitest::Test
     request = RequestParser.new(sample_lines)
     response = Response.new(request: request)
     string = "Verb: #{request.verb}\nPath: #{request.path}\nProtocol: #{request.protocol}\nHost: #{request.headers.fetch("Host")[0..-6]}\nPort: #{request.headers.fetch("Host")[-4..-1]}\nOrigin: #{request.headers.fetch("Origin")[0..-6]}\nAccept: #{request.headers.fetch("Accept")}\nContent-Length: #{request.headers.fetch("Content-Length")}"
-    assert_equal string, response.output
+    assert_equal string, response.output(request)
   end
 
   def test_hello_world_if_path_is_hello
@@ -32,7 +32,7 @@ class ResponseTest < Minitest::Test
      request = RequestParser.new(sample_lines)
      response = Response.new(request: request, counter: counter)
      string = "Hello World! #{counter}"
-     assert_equal string, response.output
+     assert_equal string, response.output(request, counter)
    end
 
  def test_time_if_path_is_datetime
@@ -47,7 +47,7 @@ class ResponseTest < Minitest::Test
     request = RequestParser.new(sample_lines)
     response = Response.new(request: request)
     string = "#{date}"
-    assert_equal string, response.output
+    assert_equal string, response.output(request)
   end
 
  def test_total_request_if_path_is_shutdown
@@ -62,7 +62,7 @@ class ResponseTest < Minitest::Test
     request = RequestParser.new(sample_lines)
     response = Response.new(request: request, counter: counter)
     string = "Total Request: #{counter}"
-    assert_equal string, response.output
+    assert_equal string, response.output(request, counter)
   end
 
   def test_word_response_if_word_search_is_path
@@ -77,7 +77,7 @@ class ResponseTest < Minitest::Test
    word = request.path.split('?')[1].split('=')[1]
    response = Response.new(request: request)
    string = "#{word.upcase} is a known word"
-   assert_equal string, response.output
+   assert_equal string, response.output(request)
   end
 
   def test_invalid_word_if_word_seach_is_path
@@ -92,6 +92,6 @@ class ResponseTest < Minitest::Test
    word = request.path.split('?')[1].split('=')[1]
    response = Response.new(request: request)
    string = "#{word.upcase} is not a known word"
-   assert_equal string, response.output
+   assert_equal string, response.output(request)
   end
 end

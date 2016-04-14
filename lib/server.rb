@@ -20,7 +20,7 @@ class Server
         counter: counter
       }
       response = Response.new(response_params)
-      client.puts response.output
+      client.puts response.output(request, counter)
 
       break if request.path == "/shutdown"
       client.close

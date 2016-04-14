@@ -3,54 +3,54 @@ require './lib/request_parser.rb'
 class Response
 
   def initialize(params = {})
-    @request = params[:request]
-    @counter = params[:counter]
+    request = params[:request]
+    counter = params[:counter]
   end
 
-  def output
+  def output(request, counter = nil)
 
-    if action == "/"
-       get_diagnostics
-    elsif action == "/hello"
-       get_hello
-    elsif action == "/datetime"
+    if action(request) == "/"
+       get_diagnostics(request)
+    elsif action(request) == "/hello"
+       get_hello(counter)
+    elsif action(request) == "/datetime"
        get_date
-    elsif action == "/shutdown"
-       get_shutdown
-    elsif action == "/word_search"
-      determine_valid_word(searched_word)
+    elsif action(request) == "/shutdown"
+       get_shutdown(counter)
+    elsif action(request) == "/word_search"
+      determine_valid_word(searched_word(request))
     end
   end
 
   private
 
-  def action
-    @request.path.split("?")[0]
+  def action(request)
+    request.path.split("?")[0]
   end
 
-  def get_diagnostics
+  def get_diagnostics(request)
     [
-      "Verb: #{@request.verb}",
-      "Path: #{@request.path}",
-      "Protocol: #{@request.protocol}",
-      "Host: #{@request.headers.fetch("Host")[0..-6]}",
-      "Port: #{@request.headers.fetch("Host")[-4..-1]}",
-      "Origin: #{@request.headers.fetch("Origin")[0..-6]}",
-      "Accept: #{@request.headers.fetch("Accept")}",
-      "Content-Length: #{@request.headers.fetch("Content-Length")}"
+      "Verb: #{request.verb}",
+      "Path: #{request.path}",
+      "Protocol: #{request.protocol}",
+      "Host: #{request.headers.fetch("Host")[0..-6]}",
+      "Port: #{request.headers.fetch("Host")[-4..-1]}",
+      "Origin: #{request.headers.fetch("Origin")[0..-6]}",
+      "Accept: #{request.headers.fetch("Accept")}",
+      "Content-Length: #{request.headers.fetch("Content-Length")}"
     ].join("\n")
   end
 
-  def get_hello
-    "Hello World! #{@counter}"
+  def get_hello(counter)
+    "Hello World! #{counter}"
   end
 
   def get_date
     Time.now.strftime('%l:%M %p on %A, %B %e, %Y')
   end
 
-  def get_shutdown
-    "Total Request: #{@counter}"
+  def get_shutdown(counter)
+    "Total Request: #{counter}"
   end
 
   def valid_words
@@ -67,8 +67,8 @@ class Response
     end
   end
 
-  def searched_word
-    word = @request.path.split('?')[1]
+  def searched_word(request)
+    word = request.path.split('?')[1]
     return "" if word.nil?
     word.split('=')[1]
   end
