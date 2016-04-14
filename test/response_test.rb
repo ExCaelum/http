@@ -15,13 +15,13 @@ class ResponseTest < Minitest::Test
       "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
        "Accept: */*"]
     request = RequestParser.new(sample_lines)
-    response = Response.new
-    string = "Verb: #{request.verb}\nPath: #{request.path}\nProtocol: #{request.protocol}\nHost: #{request.headers.fetch("Host")[0..-6]}\nPort: #{request.headers.fetch("Host")[-4..-1]}\nOrigin: #{request.headers.fetch("Host")[0..-6]}\nAccept: #{request.headers.fetch("Accept")}"
-    assert_equal string, response.output(request)
+    response = Response.new(request: request)
+    string = "Verb: #{request.verb}\nPath: #{request.path}\nProtocol: #{request.protocol}\nHost: #{request.headers.fetch("Host")[0..-6]}\nPort: #{request.headers.fetch("Host")[-4..-1]}\nOrigin: #{request.headers.fetch("Origin")[0..-6]}\nAccept: #{request.headers.fetch("Accept")}\nContent-Length: #{request.headers.fetch("Content-Length")}"
+    assert_equal string, response.output
   end
 
   def test_hello_world_if_path_is_hello
-    counter = 0
+    counter = 1
     sample_lines = ["GET /hello HTTP/1.1",
       "Host: 127.0.0.1:9297",
       "Connection: keep-alive",
@@ -30,9 +30,9 @@ class ResponseTest < Minitest::Test
       "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
        "Accept: */*"]
      request = RequestParser.new(sample_lines)
-     response = Response.new
+     response = Response.new(request: request, counter: counter)
      string = "Hello World! #{counter}"
-     assert_equal string, response.output(request)
+     assert_equal string, response.output
    end
 
  def test_time_if_path_is_datetime
@@ -45,13 +45,13 @@ class ResponseTest < Minitest::Test
      "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
       "Accept: */*"]
     request = RequestParser.new(sample_lines)
-    response = Response.new
+    response = Response.new(request: request)
     string = "#{date}"
-    assert_equal string, response.output(request)
+    assert_equal string, response.output
   end
 
  def test_total_request_if_path_is_shutdown
-   counter = 0
+   counter = 1
    sample_lines = ["GET /shutdown HTTP/1.1",
      "Host: 127.0.0.1:9297",
      "Connection: keep-alive",
@@ -60,9 +60,9 @@ class ResponseTest < Minitest::Test
      "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
       "Accept: */*"]
     request = RequestParser.new(sample_lines)
-    response = Response.new
+    response = Response.new(request: request, counter: counter)
     string = "Total Request: #{counter}"
-    assert_equal string, response.output(request)
+    assert_equal string, response.output
   end
 
   def test_word_response_if_word_search_is_path
@@ -75,9 +75,9 @@ class ResponseTest < Minitest::Test
        "Accept: */*"]
    request = RequestParser.new(sample_lines)
    word = request.path.split('?')[1].split('=')[1]
-   response = Response.new
+   response = Response.new(request: request)
    string = "#{word.upcase} is a known word"
-   assert_equal string, response.output(request)
+   assert_equal string, response.output
   end
 
   def test_invalid_word_if_word_seach_is_path
@@ -90,18 +90,8 @@ class ResponseTest < Minitest::Test
        "Accept: */*"]
    request = RequestParser.new(sample_lines)
    word = request.path.split('?')[1].split('=')[1]
-   response = Response.new
+   response = Response.new(request: request)
    string = "#{word.upcase} is not a known word"
-   assert_equal string, response.output(request)
-  end
-
-  def sample_request_lines
-    ["GET / HTTP/1.1",
-      "Host: 127.0.0.1:9297",
-      "Connection: keep-alive",
-      "Content-Length: 0",
-      "Cache-Control: no-cache",
-      "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
-       "Accept: */*"]
+   assert_equal string, response.output
   end
 end
