@@ -20,10 +20,7 @@ class Response
     elsif action(request) == "/word_search"
       determine_valid_word(searched_variable(request))
     elsif action(request) == "/start_game"
-      ps.game = true
-      ps.code = rand(0..100)
-      ps.guess_count = 0
-      start_game
+      begin_game
     elsif action(request) == "/game" && request.verb == "GET" && @ps.game == true
       give_game_info
     elsif action(request) == "/game" && request.verb == "POST" && @ps.game == true
@@ -90,6 +87,13 @@ class Response
     variable = request.path.split('?')[1]
     return "" if variable.nil?
     variable.split('=')[1]
+  end
+
+  def begin_game
+    @ps.game = true
+    @ps.code = rand(0..100)
+    @ps.guess_count = 0
+    start_game
   end
 
   def start_game

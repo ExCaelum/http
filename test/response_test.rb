@@ -109,7 +109,7 @@ class ResponseTest < Minitest::Test
       "Origin: chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop",
        "Accept: */*"]
     request = RequestParser.new(sample_lines)
-    response = Response.new(request)
+    response = Response.new(request, counter, @ps)
     string = "Good Luck!"
     assert_equal string, response.output(request, counter, @ps)
     assert_equal true, @ps.game
