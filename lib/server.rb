@@ -1,10 +1,12 @@
 require 'socket'
 require 'pry'
 require './lib/response'
+require './lib/persist'
 
 class Server
 
   def initialize
+    @ps = Persistent.new
     @tcp_server = TCPServer.new(9297)
   end
 
@@ -15,15 +17,16 @@ class Server
       request_lines = get_lines(client)
       counter += 1
       request = RequestParser.new(request_lines)
-      response_params = {
-        request: request,
-        counter: counter
-      }
-      response = Response.new(response_params)
-      client.puts response.output
+      response = Response.new(request, counter, @ps)
+      output = response.output(request, counter, @ps)
+      headers = ["HTTP/1.1 302 Found",
+            "Location: http://127.0.0.1:9297/game\r\n\r\n"].join("\r\n")
 
-      break if request.path == "/shutdown"
+      @ps.info = client.read(response.content_length(request))
+      client.puts headers if request.verb == "POST" && @ps.game == true && request.path == "/game"
+      client.puts output
       client.close
+      break if request.path == "/shutdown"
     end
   end
 
