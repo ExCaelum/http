@@ -32,6 +32,10 @@ class RequestParser
   def headers
     @request_lines.drop(1).map do |line|
       parse_header_line(line)
-    end.to_h 
+    end.to_h
   end
+
+  # def content
+  #   verb == "POST"
+  #   headers.find("Content-Length")
 end
